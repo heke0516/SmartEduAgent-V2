@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>智慧教育系统 - 智能教学</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; height: 100vh; }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e1e8ed;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .session-list {
+            margin-top: 20px;
+        }
+        
+        .session-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .session-item:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+        
+        .session-item.active {
+            background: #e8f0fe;
+            border-color: #667eea;
+        }
+        
+        .session-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .delete-btn {
+            opacity: 0;
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            margin-left: 8px;
+        }
+        
+        .session-item:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        .delete-btn:hover {
+            background: #e84118;
+        }
+        
+        .session-title {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .session-date {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e8ed;
+            background: #fafbfc;
+        }
+        
+        .chat-header h2 {
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 18px 24px;
+            border-radius: 12px;
+            line-height: 1.8;
+            font-size: 17px;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .message.user .message-role {
+            color: white;
+        }
+        
+        .message.ai {
+            align-self: flex-start;
+            background: #f7f7f8;
+            color: #343541;
+            max-width: 90%;
+        }
+        
+        .message.ai .message-role {
+            color: #10a37f;
+            font-weight: 700;
+        }
+        
+        .message-role {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #6e6e80;
+        }
+        
+        .message-content {
+            word-wrap: break-word;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+        
+        .message-content p {
+            margin-bottom: 12px;
+        }
+        
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .message-content h1, .message-content h2, .message-content h3 {
+            margin-top: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .message-content h1 { font-size: 24px; }
+        .message-content h2 { font-size: 22px; }
+        .message-content h3 { font-size: 20px; }
+        
+        .message-content pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .message-content code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 15px;
+        }
+        
+        .message-content pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+        
+        .message-content ul, .message-content ol {
+            margin: 12px 0;
+            padding-left: 24px;
+        }
+        
+        .message-content li {
+            margin: 6px 0;
+        }
+        
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #e1e8ed;
+            background: #fafbfc;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: none;
+            min-height: 50px;
+            max-height: 150px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .welcome-message h3 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message p {
+            font-size: 14px;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">
+        <span>🎓</span> 智慧教育系统
+    </div>
+    <div class="nav-links">
+        <a class="nav-item active" onclick="navigateTo('chat')">智能教学</a>
+        <a class="nav-item" onclick="navigateTo('note')">笔记助手</a>
+        <a class="nav-item" onclick="navigateTo('analysis')">学情分析</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="sidebar-title">
+            <span>学习会话</span>
+        </div>
+        <div class="session-list" id="session-list"></div>
+    </div>
+    
+    <div class="main-content">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2 id="chat-title">智能教学助手</h2>
+            </div>
+            <div class="chat-messages" id="chat-box">
+                <div class="welcome-message">
+                    <h3>🎓 欢迎使用智能教学助手</h3>
+                    <p>告诉我你想学习什么，我会为你制定学习计划并进行主动教学</p>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <textarea class="chat-input" id="msg-input" placeholder="例如：我想学习深度学习的基础知识..." rows="1"></textarea>
+                    <button class="send-btn" onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentSessionId = null;
+
+    async function loadSessions() {
+        const res = await fetch('http://localhost:8080/api/sessions');
+        const sessions = await res.json();
+        const list = document.getElementById('session-list');
+        list.innerHTML = '';
+        sessions.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'session-item' + (currentSessionId === s.id ? ' active' : '');
+            div.innerHTML = `
+                <div class="session-content">
+                    <div class="session-title">${s.title}</div>
+                    <div class="session-date">${s.createdAt.split('T')[0]}</div>
+                </div>
+                <button class="delete-btn" onclick="event.stopPropagation(); deleteSession(${s.id})">删除</button>
+            `;
+            div.onclick = () => loadMessages(s.id);
+            list.appendChild(div);
+        });
+    }
+
+    async function loadMessages(sid) {
+        currentSessionId = sid;
+        const res = await fetch(`http://localhost:8080/api/sessions/${sid}/messages`);
+        const msgs = await res.json();
+        const box = document.getElementById('chat-box');
+        box.innerHTML = '';
+        
+        const session = await fetch(`http://localhost:8080/api/sessions`);
+        const sessions = await session.json();
+        const currentSession = sessions.find(s => s.id === sid);
+        if(currentSession) {
+            document.getElementById('chat-title').textContent = currentSession.title;
+        }
+        
+        if(msgs.length === 0) {
+            box.innerHTML = `
+                <div class="welcome-message">
+                    <h3>🎓 ${currentSession?.title || '学习会话'}</h3>
+                    <p>开始您的学习之旅吧！我会根据您的学习需求制定计划并主动教学</p>
+                </div>
+            `;
+        } else {
+            msgs.forEach(m => appendMessage(m.role, m.content));
+        }
+        loadSessions();
+    }
+
+    function appendMessage(role, text) {
+        const box = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = `message ${role.toLowerCase()}`;
+        // 将AI改为教师，USER改为学生
+        const displayRole = role === 'AI' ? '教师' : (role === 'USER' ? '学生' : role);
+        div.innerHTML = `
+            <div class="message-role">${displayRole}</div>
+            <div class="message-content">${marked.parse(text)}</div>
+        `;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('msg-input');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        if(!currentSessionId) {
+            const res = await fetch(`http://localhost:8080/api/sessions?title=${encodeURIComponent(text)}`, {method: 'POST'});
+            const session = await res.json();
+            currentSessionId = session.id;
+            document.getElementById('chat-title').textContent = session.title;
+            loadSessions();
+            document.getElementById('chat-box').innerHTML = '';
+        }
+        
+        appendMessage('USER', text);
+        input.value = '';
+
+        // 创建教师消息容器用于流式显示
+        const box = document.getElementById('chat-box');
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'message ai';
+        aiDiv.innerHTML = `
+            <div class="message-role">教师</div>
+            <div class="message-content" id="stream-content"></div>
+        `;
+        box.appendChild(aiDiv);
+        box.scrollTop = box.scrollHeight;
+        
+        const streamContent = document.getElementById('stream-content');
+        let fullText = '';
+        
+        // 使用SSE流式接收响应
+        const eventSource = new EventSource(`http://localhost:8080/api/chat/stream?sessionId=${currentSessionId}&message=${encodeURIComponent(text)}`);
+        
+        eventSource.onmessage = function(event) {
+            const data = event.data;
+            if (data === '[DONE]') {
+                eventSource.close();
+                streamContent.removeAttribute('id');
+                box.scrollTop = box.scrollHeight;
+                return;
+            }
+            fullText += data;
+            // 实时渲染markdown，流畅显示格式
+            streamContent.innerHTML = marked.parse(fullText);
+            box.scrollTop = box.scrollHeight;
+        };
+        
+        eventSource.onerror = function(error) {
+            console.error('SSE Error:', error);
+            eventSource.close();
+            if (fullText === '') {
+                streamContent.innerHTML = '<span style="color:red;">连接出错，请重试</span>';
+            } else {
+                streamContent.innerHTML = marked.parse(fullText);
+            }
+            streamContent.removeAttribute('id');
+        };
+    }
+
+    function navigateTo(page) {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        if(page === 'chat') {
+            window.location.href = 'index.html';
+        } else if(page === 'note') {
+            window.location.href = 'note.html';
+        } else if(page === 'analysis') {
+            window.location.href = 'analysis.html';
+        }
+    }
+
+    async function deleteSession(sessionId) {
+        if (!confirm('确定要删除这个学习会话吗？')) {
+            return;
+        }
+        
+        try {
+            await fetch(`http://localhost:8080/api/sessions/${sessionId}`, {
+                method: 'DELETE'
+            });
+            
+            // 如果删除的是当前会话，清空聊天区域
+            if (currentSessionId === sessionId) {
+                currentSessionId = null;
+                document.getElementById('chat-box').innerHTML = `
+                    <div class="welcome-message">
+                        <h3>🎓 欢迎使用智能教学助手</h3>
+                        <p>告诉我你想学习什么，我会为你制定学习计划并进行主动教学</p>
+                    </div>
+                `;
+                document.getElementById('chat-title').textContent = '智能教学助手';
+            }
+            
+            // 重新加载会话列表
+            loadSessions();
+        } catch (error) {
+            console.error('删除会话失败:', error);
+            alert('删除会话失败，请重试');
+        }
+    }
+
+    document.getElementById('msg-input').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    loadSessions();
+</script>
+</body>
+</html>
